@@ -644,40 +644,26 @@
       }, 200);
     }
 
-    // Size selector
+    // Size selector + Shopify variant map
+    const variantMap = {
+      'S':   '47027613401282',
+      'M':   '47027613434050',
+      'L':   '47027613466818',
+      'XL':  '47027613499586',
+      '2XL': '47027613532354',
+      '3XL': '47027613565122'
+    };
     let selectedSize = 'M';
+
     function selectSize(el) {
       document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
       el.classList.add('active');
       selectedSize = el.textContent.trim();
     }
 
-    // Stripe checkout
-    async function checkout() {
-      const btn = document.getElementById('buyBtn');
-      const btnText = document.getElementById('buyBtnText');
-      btn.style.opacity = '0.7';
-      btn.style.pointerEvents = 'none';
-      btnText.textContent = 'Redirecting...';
-      try {
-        const res = await fetch('/api/checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ size: selectedSize })
-        });
-        const data = await res.json();
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          btnText.textContent = 'Error — try again';
-          btn.style.opacity = '1';
-          btn.style.pointerEvents = 'auto';
-        }
-      } catch (e) {
-        btnText.textContent = 'Error — try again';
-        btn.style.opacity = '1';
-        btn.style.pointerEvents = 'auto';
-      }
+    function checkout() {
+      const variantId = variantMap[selectedSize] || variantMap['M'];
+      window.location.href = 'https://hypurr-threads.myshopify.com/cart/' + variantId + ':1?channel=buy_button';
     }
 
     // Scroll reveal
